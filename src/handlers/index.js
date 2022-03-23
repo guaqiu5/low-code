@@ -1,8 +1,8 @@
 import textHandler from "./textHandler";
 let handlerList={
-    textHandler,
+    textComp:textHandler
 }
 let getHandler=(info)=>{
-    return handlerList[info.type]
+    return handlerList[info.type]()
 }
 export default getHandler

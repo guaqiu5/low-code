@@ -12,6 +12,6 @@ export default {
 
 <style lang="less" scoped>
 .wrapper{
-    width:200px;
+    width:250px;
 }
 </style>
