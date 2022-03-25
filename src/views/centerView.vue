@@ -62,6 +62,11 @@ export default{
             }
         }
     },
+    mounted(){
+        EventBus.$on('compsyn',(comp)=>{
+            this.curComp=comp
+        })
+    },
     methods:{
         handleSendComp(comp){
             EventBus.$emit("sendcomp",comp)
