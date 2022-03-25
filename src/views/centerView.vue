@@ -65,6 +65,10 @@ export default{
     mounted(){
         EventBus.$on('compsyn',(comp)=>{
             this.curComp=comp
+            this.$nextTick(()=>{
+                mountComponent(comp)
+            })
+            console.log(`!`)
         })
     },
     methods:{
