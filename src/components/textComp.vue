@@ -1,7 +1,7 @@
 <template>
   <div class='wrapper' :style="selfStyle">
       <span>
-          {{payload.plainTxt}}
+          {{payload}}
       </span>
   </div>
 </template>
@@ -22,11 +22,9 @@ export default {
             type:[String,Number]
         },
         payload:{
-            type:Object,
+            type:String,
             default(){
-                return {
-                    plainTxt:`默认值`
-                }
+                return `默认值`
             }
         }  
     },

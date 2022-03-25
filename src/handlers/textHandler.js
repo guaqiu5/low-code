@@ -33,11 +33,9 @@ let textHandler=()=>{
             placeholder:`请输入文本组件的字体大小`,
         },
     ]
-let payload={
-        plainTxt: `刘亦菲`
-    }
+let payload=`刘亦菲`
 
-const template=`<text-Comp ${parseAttrs(attrs)} />`
+const template=`<text-Comp ${parseAttrs(attrs)} payload='${payload}' />`
 
 return {attrs,payload,template}
 
