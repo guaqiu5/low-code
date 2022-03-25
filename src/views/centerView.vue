@@ -1,5 +1,6 @@
 <template>
     <div class='wrapper'
+     id="canvas"
      @dragover="handleDragOver"
      @drop="handleDrop"
      @click="handleSelect"
@@ -67,6 +68,7 @@ export default{
             document.addEventListener('mousemove',this.mouseMove,true)
             document.addEventListener('mouseup',this.mouseUp,true)
         },
+
         mouseMove(e){
             //计算偏移量
             let offsetX=e.clientX-this.preReplaceX;
@@ -75,26 +77,54 @@ export default{
             //设置组件的位置
             let comp=document.getElementById(this.curComp.id)
             Object.assign(comp.style,{
-                left:this.curComp.position.left+offsetX+'px',
-                top:this.curComp.position.top+offsetY+'px',
+                left:this.handleOutRange('x',this.curComp.position.left+offsetX,this.curComp)+'px',
+                top:this.handleOutRange('y',this.curComp.position.top+offsetY,this.curComp)+'px'
             })
             let border=document.getElementById('selectBorder')
             Object.assign(border.style,{
-                left:this.curComp.position.left+offsetX+'px',
-                top:this.curComp.position.top+offsetY+'px',
+                left:this.handleOutRange('x',this.curComp.position.left+offsetX,this.curComp)+'px',
+                top:this.handleOutRange('y',this.curComp.position.top+offsetY,this.curComp)+'px'
             })
          
         },
+
         mouseUp(e){
             document.removeEventListener('mousemove',this.mouseMove,true)
             document.removeEventListener('mouseup',this.mouseUp,true)
-            this.curComp.position.left+=e.clientX-this.preReplaceX
-            this.curComp.position.top+=e.clientY-this.preReplaceY
+            this.curComp.position.left=this.handleOutRange('x',this.curComp.position.left+e.clientX-this.preReplaceX,this.curComp)
+            this.curComp.position.top=this.handleOutRange('y',this.curComp.position.top+e.clientY-this.preReplaceY,this.curComp)
         },
+
+        handleOutRange(type,val,comp){
+            const canvas=document.getElementById('canvas')
+            const canvasWidth=canvas.clientWidth
+            const canvasHeight=canvas.clientHeight
+            let compWidth=0
+            let compHeight=0
+            comp.attrs.forEach((i)=>{
+                if(i.keys=='width') compWidth=i.value
+                if(i.keys=='height') compHeight=i.value
+            })
+            let maxX=canvasWidth-compWidth
+            let maxY=canvasHeight-compHeight
+            let res=0;
+            if(type=='x'){
+                if(val<0) res=0
+                else if(val>maxX) res=maxX
+                else res=val
+            }
+            if(type=='y'){
+                if(val<0) res=0
+                else if(val>maxY) res=maxY
+                else res=val
+            }
+            return res
+        },
+
         handleDragOver(e){
             e.preventDefault()//阻止默认行为 让画布可以接受到 
-            
         },
+
         handleDrop(e){
             e.preventDefault()//阻止默认行为 让画布可以接受到
             let info=JSON.parse(e.dataTransfer.getData('info'))
@@ -155,6 +185,7 @@ export default{
 
 <style lang="less" scoped>
 .wrapper{
+    background: #eee;
     flex:1;
     position: relative;
     #selectBorder{

@@ -24,7 +24,7 @@ export default {
 <style lang="less" scoped>
 .wrapper{
     background: #3A3737;
-    height: 80px;
+    height: 10vh;
     display: flex;
     justify-content: space-between;
     align-items: center;
