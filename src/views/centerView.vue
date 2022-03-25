@@ -2,14 +2,16 @@
     <div class='wrapper'
      @dragover="handleDragOver"
      @drop="handleDrop"
+     @click="handleSelect"
      > 
         <div
         v-for="(item) of components"
         :key=item.id
         :id=item.id
         >
-        1
-        </div>     
+        
+        </div>
+        <div class="selectBorder" v-if="curComp" :style="hasSelected"></div>     
     </div>
 </template>
 
@@ -22,6 +24,33 @@ export default{
         return {
             components:[],//画布上用到的组件
             zIndex:0,//组件堆叠 越大就能覆盖其他的
+            curComp:undefined,//当前选中的组件
+        }
+    },
+    computed:{
+        hasSelected(){
+            if(!this.curComp) return;
+            let width=0;
+            let height=0;
+            this.curComp.attrs.forEach((item)=>{
+                if(item.keys=='width'){
+                    width=item.value
+                }
+                if(item.keys='height'){
+                    height=item.value
+                }
+            })
+            let left=this.curComp.position.left
+            console.log(left)
+            let top=this.curComp.position.top
+            let zIndex=this.curComp.position.zIndex
+            return{
+                width:`${width}px`,
+                height:`${height}px`,
+                left:`${left}px`,
+                top:`${top}px`,
+                zIndex:`${zIndex}`
+            }
         }
     },
     methods:{
@@ -53,13 +82,32 @@ export default{
             if(left<0) left=0;
             if(top<0) top=0;
             component.position={left,top,zIndex:this.zIndex};
-            console.log(`component`,component)
+            //console.log(`component`,component)
             this.components.push(component);
             this.$nextTick(()=>{
                 mountComponent(component)
             })
-
-
+        },
+        handleSelect(e){
+            //console.log(e)
+            //通过事件冒泡得到所需要的选中的组件
+            //正则匹配
+            let reg=/\w{8}-\w{4}/;
+            let node=e.target;
+            let count=0;
+           while(node&&!reg.test(node.id)){
+               count++;
+               if(count==20){
+                   return
+               }
+               node=node.parentNode;
+           }
+            if(node&&node.id){
+                this.curComp=this.components.find((item)=>{
+                    return item.id==node.id
+                })
+                console.log(this.curComp)
+            }
         }
     }
 }
@@ -69,5 +117,9 @@ export default{
 .wrapper{
     flex:1;
     position: relative;
+    .selectBorder{
+        border: 1px solid green;
+        position:absolute;
+    }
 }
 </style>
