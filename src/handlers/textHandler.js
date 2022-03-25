@@ -37,7 +37,7 @@ let payload={
         plainTxt: `刘亦菲`
     }
 
-const template=`<text-Comp ${parseAttrs(attrs)} payload=${payload}/>`
+const template=`<text-Comp ${parseAttrs(attrs)} />`
 
 return {attrs,payload,template}
 
