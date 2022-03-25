@@ -1,12 +1,22 @@
 <template>
     <div class='wrapper'> 
-          right
+          right--{{this.comp}}
     </div>
 </template>
 
 <script>
+import {EventBus} from "../utils/EventBus"
 export default {
-
+    mounted(){
+        EventBus.$on('sendcomp',(comp)=>{
+            this.comp=comp
+        })
+    },
+    data(){
+        return{
+            comp:null
+        }
+    }
 }
 </script>
 

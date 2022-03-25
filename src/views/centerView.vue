@@ -24,6 +24,7 @@
 import getHandler from '../handlers/index'
 import genId from '../utils/genId'
 import mountComponent from '../utils/mountComponent'
+import {EventBus} from '../utils/EventBus'
 export default{
     data(){
         return {
@@ -62,6 +63,10 @@ export default{
         }
     },
     methods:{
+        handleSendComp(comp){
+            EventBus.$emit("sendcomp",comp)
+        },
+
         handleReplace(e){
             this.preReplaceX=e.clientX;
             this.preReplaceY=e.clientY;
@@ -173,6 +178,7 @@ export default{
                 this.curComp=this.components.find((item)=>{
                     return item.id==node.id
                 })
+                this.handleSendComp(this.curComp)
             }else{
                 this.curComp=undefined
             }
