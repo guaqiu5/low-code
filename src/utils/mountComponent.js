@@ -9,7 +9,7 @@ let mountComponent=(comp)=>{
         //console.log(index)
         data[index]=item.value
     })
-    console.log(data)
+
     //console.log(document.getElementById(id).innerHTML)
     new Vue({
         name:id.toString(),

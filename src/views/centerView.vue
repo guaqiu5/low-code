@@ -11,7 +11,11 @@
         >
         
         </div>
-        <div class="selectBorder" v-if="curComp" :style="hasSelected"></div>     
+        <div
+        id="selectBorder"
+        v-if="curComp"
+        @mousedown="handleReplace"
+        :style="hasSelected"></div>     
     </div>
 </template>
 
@@ -25,6 +29,8 @@ export default{
             components:[],//画布上用到的组件
             zIndex:0,//组件堆叠 越大就能覆盖其他的
             curComp:undefined,//当前选中的组件
+            preReplaceX:0,
+            preReplaceY:0,//记录组件重新排列前的坐标
         }
     },
     computed:{
@@ -36,12 +42,13 @@ export default{
                 if(item.keys=='width'){
                     width=item.value
                 }
-                if(item.keys='height'){
+                if(item.keys=='height'){
                     height=item.value
                 }
             })
+         
             let left=this.curComp.position.left
-            console.log(left)
+       
             let top=this.curComp.position.top
             let zIndex=this.curComp.position.zIndex
             return{
@@ -54,6 +61,36 @@ export default{
         }
     },
     methods:{
+        handleReplace(e){
+            this.preReplaceX=e.clientX;
+            this.preReplaceY=e.clientY;
+            document.addEventListener('mousemove',this.mouseMove,true)
+            document.addEventListener('mouseup',this.mouseUp,true)
+        },
+        mouseMove(e){
+            //计算偏移量
+            let offsetX=e.clientX-this.preReplaceX;
+            let offsetY=e.clientY-this.preReplaceY;
+
+            //设置组件的位置
+            let comp=document.getElementById(this.curComp.id)
+            Object.assign(comp.style,{
+                left:this.curComp.position.left+offsetX+'px',
+                top:this.curComp.position.top+offsetY+'px',
+            })
+            let border=document.getElementById('selectBorder')
+            Object.assign(border.style,{
+                left:this.curComp.position.left+offsetX+'px',
+                top:this.curComp.position.top+offsetY+'px',
+            })
+         
+        },
+        mouseUp(e){
+            document.removeEventListener('mousemove',this.mouseMove,true)
+            document.removeEventListener('mouseup',this.mouseUp,true)
+            this.curComp.position.left+=e.clientX-this.preReplaceX
+            this.curComp.position.top+=e.clientY-this.preReplaceY
+        },
         handleDragOver(e){
             e.preventDefault()//阻止默认行为 让画布可以接受到 
             
@@ -82,14 +119,14 @@ export default{
             if(left<0) left=0;
             if(top<0) top=0;
             component.position={left,top,zIndex:this.zIndex};
-            //console.log(`component`,component)
+            
             this.components.push(component);
             this.$nextTick(()=>{
                 mountComponent(component)
             })
         },
         handleSelect(e){
-            //console.log(e)
+            
             //通过事件冒泡得到所需要的选中的组件
             //正则匹配
             let reg=/\w{8}-\w{4}/;
@@ -97,7 +134,7 @@ export default{
             let count=0;
            while(node&&!reg.test(node.id)){
                count++;
-               if(count==20){
+               if(count==30){
                    return
                }
                node=node.parentNode;
@@ -106,8 +143,11 @@ export default{
                 this.curComp=this.components.find((item)=>{
                     return item.id==node.id
                 })
-                console.log(this.curComp)
+            }else{
+                this.curComp=undefined
             }
+           
+            
         }
     }
 }
@@ -117,7 +157,7 @@ export default{
 .wrapper{
     flex:1;
     position: relative;
-    .selectBorder{
+    #selectBorder{
         border: 1px solid green;
         position:absolute;
     }
